@@ -2,15 +2,15 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
-    webtools.url = "/mnt/c/MT/system-web";
+    webtools.url = "/home/nixos/MT/repos/talbergs/system-web";
     webtools.inputs.nixpkgs.follows = "nixpkgs";
-    dbtools.url = "/mnt/c/MT/system-db";
+    dbtools.url = "/home/nixos/MT/repos/talbergs/system-db";
     dbtools.inputs.nixpkgs.follows = "nixpkgs";
-    editor.url = "/mnt/c/MT/talbergs/editor";
+    editor.url = "/home/nixos/MT/repos/talbergs/editor";
     editor.inputs.nixpkgs.follows = "nixpkgs";
-    shell.url = "/mnt/c/MT/talbergs/shell";
+    shell.url = "/home/nixos/MT/repos/talbergs/shell";
     shell.inputs.nixpkgs.follows = "nixpkgs";
-    base.url = "/mnt/c/MT/talbergs/base";
+    base.url = "/home/nixos/MT/repos/talbergs/base";
     base.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -32,6 +32,10 @@
               wsl.enable = true;
               wsl.defaultUser = "nixos";
             }
+
+            # { programs.ssh.startAgent = true; }
+
+            # ./module-httpd-service-new.nix
 
             (
               { pkgs, ... }:
@@ -59,12 +63,17 @@
             (
               { pkgs, ... }:
               {
+                environment.variables = {
+                  NIXPKGS_ALLOW_UNFREE = 1;
+                };
                 environment.systemPackages = with pkgs; [
                   self.inputs.webtools.packages.${system}.default
                   self.inputs.dbtools.packages.${system}.default
                   self.inputs.shell.packages.${system}.default
                   self.inputs.editor.packages.${system}.default
                   self.inputs.base.packages.${system}.default
+                  nginx
+                  zabbix.agent
                 ];
               }
             )
